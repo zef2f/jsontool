@@ -51,5 +51,17 @@ class TestAddElementToJsonArray(unittest.TestCase):
         with self.assertRaises(TypeError):
             add_element_to_json_array([], "fruits", "cherry")
 
+    def test_overwrite_existing_key(self):
+        """Test overwriting an existing key's array with a new element when `overwrite=True`."""
+        json_obj = {"fruits": ["apple", "banana"]}
+        updated_json = add_element_to_json_array(json_obj, "fruits", "cherry", overwrite=True)
+        self.assertEqual(updated_json["fruits"], ["cherry"])
+
+    def test_add_element_to_existing_key_without_overwrite(self):
+        """Test adding an element to an existing key without overwriting."""
+        json_obj = {"fruits": ["apple"]}
+        updated_json = add_element_to_json_array(json_obj, "fruits", "banana", overwrite=False)
+        self.assertEqual(updated_json["fruits"], ["apple", "banana"])
+
 if __name__ == "__main__":
     unittest.main()
