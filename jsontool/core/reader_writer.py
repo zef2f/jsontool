@@ -53,3 +53,23 @@ def write_json_to_string(data, indent=None):
     except TypeError as e:
         raise ValueError(f"Unable to serialize data to JSON: {e}")
 
+def write_json_to_file(data, file_path, indent=None):
+    """
+    Writes a Python object to a file in JSON format.
+
+    Args:
+        data (dict or list): The Python object to be written as JSON.
+        file_path (str): The path to the file where JSON data will be written.
+        indent (int, optional): Number of spaces for indentation in the JSON file. Defaults to None.
+
+    Raises:
+        TypeError: If the input data is not serializable to JSON.
+        IOError: If there is an issue writing to the file.
+    """
+    try:
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=indent, ensure_ascii=False)
+    except TypeError as e:
+        raise ValueError(f"Unable to serialize data to JSON: {e}")
+    except IOError as e:
+        raise IOError(f"Unable to write to file '{file_path}': {e}")

@@ -4,6 +4,7 @@ import os
 from jsontool.core.reader_writer import read_json_from_string
 from jsontool.core.reader_writer import read_json_from_file
 from jsontool.core.reader_writer import write_json_to_string
+from jsontool.core.reader_writer import write_json_to_file
 
 
 class TestReadJsonFromString(unittest.TestCase):
@@ -115,6 +116,46 @@ class TestWriteJsonToString(unittest.TestCase):
         data = {"name": "Alice", "func": lambda x: x}  # Lambdas are not serializable
         with self.assertRaises(ValueError):
             write_json_to_string(data)
+
+
+class TestWriteJsonToFile(unittest.TestCase):
+
+    def setUp(self):
+        """Prepare paths for test files"""
+        self.test_file_valid = 'test_valid_output.json'
+        self.test_file_invalid_path = '/invalid_path/test_output.json'
+
+    def tearDown(self):
+        """Clean up test files"""
+        if os.path.exists(self.test_file_valid):
+            os.remove(self.test_file_valid)
+
+    def test_write_valid_json(self):
+        """Test writing valid JSON to a file"""
+        data = {"name": "Alice", "age": 30, "city": "New York"}
+        write_json_to_file(data, self.test_file_valid, indent=2)
+        with open(self.test_file_valid, 'r', encoding='utf-8') as f:
+            content = f.read()
+        expected_content = (
+            '{\n'
+            '  "name": "Alice",\n'
+            '  "age": 30,\n'
+            '  "city": "New York"\n'
+            '}'
+        )
+        self.assertEqual(content.strip(), expected_content)
+
+    def test_write_non_serializable_data(self):
+        """Test writing non-serializable data raises ValueError"""
+        data = {"name": "Alice", "func": lambda x: x}  # Lambda is not serializable
+        with self.assertRaises(ValueError):
+            write_json_to_file(data, self.test_file_valid)
+
+    def test_write_to_invalid_path(self):
+        """Test writing JSON to an invalid file path raises IOError"""
+        data = {"name": "Alice", "age": 30}
+        with self.assertRaises(OSError):
+            write_json_to_file(data, self.test_file_invalid_path)
 
 if __name__ == '__main__':
     unittest.main()
