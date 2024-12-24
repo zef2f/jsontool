@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 def add_key_to_json(json_data: Dict[str, Any], key: str, value: Any, overwrite: bool = True) -> Dict[str, Any]:
     """
@@ -18,12 +18,10 @@ def add_key_to_json(json_data: Dict[str, Any], key: str, value: Any, overwrite: 
         ValueError: If the key exists and overwrite is False.
         KeyError: If the key does not exist and overwrite is False.
     """
-    if key in json_data:
-        if not overwrite:
-            raise ValueError(f"Key '{key}' already exists. To overwrite, set 'overwrite=True'.")
-    else:
-        if not overwrite:
-            raise KeyError(f"Key '{key}' does not exist in the JSON object.")
+    if key in json_data and not overwrite:
+        raise ValueError(f"Key '{key}' already exists. To overwrite, set 'overwrite=True'.")
+    elif key not in json_data and not overwrite:
+        raise KeyError(f"Key '{key}' does not exist in the JSON object.")
 
     json_data[key] = value
     return json_data
@@ -37,7 +35,7 @@ def add_element_to_json_array(json_obj: Dict[str, Any], key: str, element: Any, 
     Args:
         json_obj (dict): The JSON object containing the array.
         key (str): The key that holds the array.
-        element (any): The element to add to the array.
+        element (Any): The element to add to the array.
         overwrite (bool): Whether to overwrite the existing array if the key already exists.
 
     Returns:
@@ -51,27 +49,23 @@ def add_element_to_json_array(json_obj: Dict[str, Any], key: str, element: Any, 
     if not isinstance(json_obj, dict):
         raise TypeError("Input must be a dictionary.")
 
-    # Handle case where key does not exist
     if key not in json_obj:
         if overwrite:
-            # If `overwrite` is True, create a new array with the element
             json_obj[key] = [element]
         else:
-            # Raise an error if the key is not found and overwrite is False
             raise KeyError(f"Key '{key}' not found in the JSON object.")
     else:
-        # Handle the case where the key exists, check its type
-        if isinstance(json_obj[key], list):
+        current_value = json_obj[key]
+        if isinstance(current_value, list):
             if overwrite:
-                # Overwrite the existing array with the new element
                 json_obj[key] = [element]
             else:
-                # Add the element to the existing array
                 json_obj[key].append(element)
         else:
-            raise ValueError(f"The value associated with key '{key}' is not a list, but found {type(json_obj[key])}.")
+            raise ValueError(f"The value associated with key '{key}' is not a list, but found {type(current_value)}.")
 
     return json_obj
+
 
 def remove_key_from_json(json_data: Dict[str, Any], key: str) -> Dict[str, Any]:
     """
@@ -92,3 +86,34 @@ def remove_key_from_json(json_data: Dict[str, Any], key: str) -> Dict[str, Any]:
 
     del json_data[key]
     return json_data
+
+
+def remove_element_from_json_array(json_obj: Dict[str, Any], key: str, value: Any) -> Dict[str, Any]:
+    """
+    Delete an element from a JSON array corresponding to the specified key.
+
+    Args:
+        json_obj (dict): The JSON object (in Python, a dictionary).
+        key (str): The key in the JSON object that corresponds to the array.
+        value (any): The value to be deleted from the array.
+
+    Returns:
+        dict: The updated JSON object after removal.
+
+    Raises:
+        KeyError: If the key is not found in the JSON object.
+        ValueError: If the key's value is not an array or the element is not found in the array.
+    """
+    if key not in json_obj:
+        raise KeyError(f"Key '{key}' not found in the JSON object.")
+
+    current_value = json_obj[key]
+    if not isinstance(current_value, list):
+        raise ValueError(f"The value associated with key '{key}' is not an array, but found {type(current_value)}.")
+
+    try:
+        json_obj[key].remove(value)
+    except ValueError:
+        raise ValueError(f"Element '{value}' not found in the array under key '{key}'.")
+
+    return json_obj
