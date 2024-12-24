@@ -16,9 +16,15 @@ def add_key_to_json(json_data: Dict[str, Any], key: str, value: Any, overwrite: 
 
     Raises:
         ValueError: If the key exists and overwrite is False.
+        KeyError: If the key does not exist and overwrite is False.
     """
-    if key in json_data and not overwrite:
-        raise ValueError(f"Key '{key}' already exists. To overwrite, set 'overwrite=True'.")
+    if key in json_data:
+        if not overwrite:
+            raise ValueError(f"Key '{key}' already exists. To overwrite, set 'overwrite=True'.")
+    else:
+        if not overwrite:
+            raise KeyError(f"Key '{key}' does not exist in the JSON object.")
+
     json_data[key] = value
     return json_data
 

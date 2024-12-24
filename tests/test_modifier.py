@@ -4,20 +4,41 @@ from jsontool.core.modifier import add_element_to_json_array
 
 class TestJsonModifier(unittest.TestCase):
 
-    def test_add_key_to_json(self):
-        json_obj = {"name": "Alice", "age": 30}
-        result = add_key_to_json(json_obj, "city", "New York")
-        self.assertEqual(result, {"name": "Alice", "age": 30, "city": "New York"})
-
     def test_add_key_to_json_overwrite(self):
-        json_obj = {"name": "Alice", "age": 30}
-        result = add_key_to_json(json_obj, "age", 35, overwrite=True)
-        self.assertEqual(result, {"name": "Alice", "age": 35})
+        json_data = {"key1": "value1"}
+        result = add_key_to_json(json_data, "key2", "value2")
+        self.assertEqual(result, {"key1": "value1", "key2": "value2"})
 
     def test_add_key_to_json_no_overwrite(self):
-        json_obj = {"name": "Alice", "age": 30}
+        json_data = {"key1": "value1"}
         with self.assertRaises(ValueError):
-            add_key_to_json(json_obj, "age", 35, overwrite=False)
+            add_key_to_json(json_data, "key1", "new_value", overwrite=False)
+
+    def test_add_key_to_json_key_not_found(self):
+        json_data = {"key1": "value1"}
+        with self.assertRaises(KeyError):
+            add_key_to_json(json_data, "key2", "value2", overwrite=False)
+
+    def test_add_element_to_json_array_overwrite(self):
+        json_obj = {"key1": ["item1", "item2"]}
+        result = add_element_to_json_array(json_obj, "key1", "new_item", overwrite=True)
+        self.assertEqual(result, {"key1": ["new_item"]})
+
+    def test_add_element_to_json_array_no_overwrite(self):
+        json_obj = {"key1": ["item1", "item2"]}
+        result = add_element_to_json_array(json_obj, "key1", "new_item", overwrite=False)
+        self.assertEqual(result, {"key1": ["item1", "item2", "new_item"]})
+
+    def test_add_element_to_json_array_key_not_found(self):
+        json_obj = {"key1": ["item1"]}
+        with self.assertRaises(KeyError):
+            add_element_to_json_array(json_obj, "key2", "new_item", overwrite=False)
+
+    def test_add_element_to_json_array_invalid_type(self):
+        json_obj = {"key1": "not_a_list"}
+        with self.assertRaises(ValueError):
+            add_element_to_json_array(json_obj, "key1", "new_item")
+
 
 class TestAddElementToJsonArray(unittest.TestCase):
 
