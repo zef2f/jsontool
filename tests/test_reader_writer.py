@@ -2,6 +2,7 @@ import unittest
 import json
 import os
 from jsontool.core.reader_writer import read_json_from_string
+from jsontool.core.reader_writer import read_json_from_file
 
 class TestReadJsonFromString(unittest.TestCase):
     
