@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 def add_key_to_json(json_data: Dict[str, Any], key: str, value: Any, overwrite: bool = True) -> Dict[str, Any]:
     """
@@ -23,7 +23,7 @@ def add_key_to_json(json_data: Dict[str, Any], key: str, value: Any, overwrite: 
     return json_data
 
 
-def add_element_to_json_array(json_obj, key, element, overwrite=False):
+def add_element_to_json_array(json_obj: Dict[str, Any], key: str, element: Any, overwrite: bool = False) -> Dict[str, Any]:
     """
     Adds an element to a JSON array at the specified key. If the key already exists,
     it either raises an error or overwrites the existing value based on the `overwrite` parameter.
@@ -45,6 +45,7 @@ def add_element_to_json_array(json_obj, key, element, overwrite=False):
     if not isinstance(json_obj, dict):
         raise TypeError("Input must be a dictionary.")
 
+    # Handle case where key does not exist
     if key not in json_obj:
         if overwrite:
             # If `overwrite` is True, create a new array with the element
@@ -53,14 +54,15 @@ def add_element_to_json_array(json_obj, key, element, overwrite=False):
             # Raise an error if the key is not found and overwrite is False
             raise KeyError(f"Key '{key}' not found in the JSON object.")
     else:
-        if not isinstance(json_obj[key], list):
-            raise ValueError(f"The value associated with key '{key}' is not a list.")
-
-        if overwrite:
-            # Overwrite the existing array with the new element
-            json_obj[key] = [element]
+        # Handle the case where the key exists, check its type
+        if isinstance(json_obj[key], list):
+            if overwrite:
+                # Overwrite the existing array with the new element
+                json_obj[key] = [element]
+            else:
+                # Add the element to the existing array
+                json_obj[key].append(element)
         else:
-            # Add the element to the existing array
-            json_obj[key].append(element)
+            raise ValueError(f"The value associated with key '{key}' is not a list, but found {type(json_obj[key])}.")
 
     return json_obj
