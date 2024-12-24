@@ -72,3 +72,23 @@ def add_element_to_json_array(json_obj: Dict[str, Any], key: str, element: Any, 
             raise ValueError(f"The value associated with key '{key}' is not a list, but found {type(json_obj[key])}.")
 
     return json_obj
+
+def remove_key_from_json(json_data: Dict[str, Any], key: str) -> Dict[str, Any]:
+    """
+    Removes a key-value pair from a JSON object.
+
+    Args:
+        json_data (Dict[str, Any]): The JSON object from which the key should be removed.
+        key (str): The key to remove.
+
+    Returns:
+        Dict[str, Any]: The modified JSON object with the key removed.
+
+    Raises:
+        KeyError: If the key does not exist in the JSON object.
+    """
+    if key not in json_data:
+        raise KeyError(f"Key '{key}' not found in the JSON object.")
+
+    del json_data[key]
+    return json_data

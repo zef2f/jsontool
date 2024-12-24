@@ -1,6 +1,7 @@
 import unittest
 from jsontool.core.modifier import add_key_to_json
 from jsontool.core.modifier import add_element_to_json_array
+from jsontool.core.modifier import remove_key_from_json
 
 class TestJsonModifier(unittest.TestCase):
 
@@ -39,6 +40,15 @@ class TestJsonModifier(unittest.TestCase):
         with self.assertRaises(ValueError):
             add_element_to_json_array(json_obj, "key1", "new_item")
 
+    def test_remove_key_from_json(self):
+        json_data = {"name": "Alice", "age": 30}
+        result = remove_key_from_json(json_data, "age")
+        self.assertEqual(result, {"name": "Alice"})
+
+    def test_remove_key_from_json_key_not_found(self):
+        json_data = {"name": "Alice", "age": 30}
+        with self.assertRaises(KeyError):
+            remove_key_from_json(json_data, "address")
 
 class TestAddElementToJsonArray(unittest.TestCase):
 
