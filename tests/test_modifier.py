@@ -1,10 +1,10 @@
 import unittest
-from jsontool.core.modifier import add_key_to_json
-from jsontool.core.modifier import add_element_to_json_array
-from jsontool.core.modifier import remove_key_from_json
+from jsontool.core.modifier import add_key_to_json, add_element_to_json_array, remove_key_from_json, remove_element_from_json_array
+
 
 class TestJsonModifier(unittest.TestCase):
 
+    # Test cases for adding key to JSON
     def test_add_key_to_json_overwrite(self):
         json_data = {"key1": "value1"}
         result = add_key_to_json(json_data, "key2", "value2")
@@ -20,6 +20,7 @@ class TestJsonModifier(unittest.TestCase):
         with self.assertRaises(KeyError):
             add_key_to_json(json_data, "key2", "value2", overwrite=False)
 
+    # Test cases for adding element to JSON array
     def test_add_element_to_json_array_overwrite(self):
         json_obj = {"key1": ["item1", "item2"]}
         result = add_element_to_json_array(json_obj, "key1", "new_item", overwrite=True)
@@ -40,6 +41,7 @@ class TestJsonModifier(unittest.TestCase):
         with self.assertRaises(ValueError):
             add_element_to_json_array(json_obj, "key1", "new_item")
 
+    # Test cases for removing key from JSON
     def test_remove_key_from_json(self):
         json_data = {"name": "Alice", "age": 30}
         result = remove_key_from_json(json_data, "age")
@@ -49,6 +51,48 @@ class TestJsonModifier(unittest.TestCase):
         json_data = {"name": "Alice", "age": 30}
         with self.assertRaises(KeyError):
             remove_key_from_json(json_data, "address")
+
+    def test_remove_key_from_empty_json(self):
+        json_obj = {}
+        with self.assertRaises(KeyError):
+            remove_key_from_json(json_obj, "key1")
+
+    def test_remove_key_from_single_element_json(self):
+        json_obj = {"key1": "value1"}
+        result = remove_key_from_json(json_obj, "key1")
+        self.assertEqual(result, {})
+
+    # Test cases for removing element from JSON array
+    def test_remove_element_from_json_array(self):
+        json_obj = {"fruits": ["apple", "banana", "cherry"]}
+        result = remove_element_from_json_array(json_obj, "fruits", "banana")
+        self.assertEqual(result, {"fruits": ["apple", "cherry"]})
+
+    def test_remove_element_not_found(self):
+        json_obj = {"fruits": ["apple", "banana"]}
+        with self.assertRaises(ValueError):
+            remove_element_from_json_array(json_obj, "fruits", "grape")
+
+    def test_key_not_found(self):
+        json_obj = {"fruits": ["apple"]}
+        with self.assertRaises(KeyError):
+            remove_element_from_json_array(json_obj, "vegetables", "carrot")
+
+    def test_value_is_not_array(self):
+        json_obj = {"fruits": "apple"}
+        with self.assertRaises(ValueError):
+            remove_element_from_json_array(json_obj, "fruits", "banana")
+
+    def test_empty_array(self):
+        json_obj = {"fruits": []}
+        with self.assertRaises(ValueError):
+            remove_element_from_json_array(json_obj, "fruits", "banana")
+
+    def test_delete_element_from_object(self):
+        json_obj = {"fruits": {"apple": 1, "banana": 2}}
+        with self.assertRaises(ValueError):
+            remove_element_from_json_array(json_obj, "fruits", "apple")
+
 
 class TestAddElementToJsonArray(unittest.TestCase):
 
@@ -93,6 +137,7 @@ class TestAddElementToJsonArray(unittest.TestCase):
         json_obj = {"fruits": ["apple"]}
         updated_json = add_element_to_json_array(json_obj, "fruits", "banana", overwrite=False)
         self.assertEqual(updated_json["fruits"], ["apple", "banana"])
+
 
 if __name__ == "__main__":
     unittest.main()
