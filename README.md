@@ -2,6 +2,8 @@
 
 `jsontool` is a library for working with JSON files, providing universal tools for reading, writing, modifying, and analyzing JSON data. The library is designed for developers who need to easily work with various JSON structures and perform operations such as validation, transformation, and navigation through the data.
 
+> **Note:** This library was generated with the help of ChatGPT.
+
 ## Core Functionality
 
 The library will support the following operations:
